@@ -1,0 +1,82 @@
+import
+edu.duke.*;
+import 
+org.apache.commons.csv.*;
+import
+java.io.*;
+/**
+ * Write a description of class Coldest_Day here.
+ *
+ * @author (Toi'Re Anderson)
+ * @version (a version number or a date)
+ */
+public class Coldest_Day
+{
+  public CSVRecord coldestHourInFile(CSVParser parser){
+      CSVRecord smallestSoFar = null;
+      for(CSVRecord currentRow : parser)
+      {
+        if(smallestSoFar == null)
+        {
+         smallestSoFar = currentRow;   
+        }
+        else
+        {
+         double currentTemp = Double.parseDouble(currentRow.get("TemperatureF"));
+         double smallestTemp = Double.parseDouble(smallestSoFar.get("TemperatureF"));
+         if(currentTemp == -9999)
+         {
+             continue;
+            }
+         if(currentTemp < smallestTemp)
+         {
+             smallestSoFar = currentRow;
+            }
+        }
+        }
+        return smallestSoFar;
+    }
+  public void testColdestHourInFile()
+    {
+        FileResource fileEval = new FileResource();
+        CSVParser parser = fileEval.getCSVParser();
+        CSVRecord smallest = coldestHourInFile(parser);
+        System.out.println(smallest);
+    }
+  public CSVRecord fileWithColdestTemperature()
+  {
+      CSVRecord smallestSoFar = null;
+      DirectoryResource dr = new DirectoryResource();
+      String file = "";
+      for(File f : dr.selectedFiles())
+      {
+          FileResource fr = new FileResource(f);
+          CSVRecord currentRow = coldestHourInFile(fr.getCSVParser());
+          if(smallestSoFar == null)
+          {
+             smallestSoFar = currentRow;
+             file = f.getAbsolutePath();
+            }else
+            if(smallestSoFar.equals("-9999"))
+            {
+             continue;   
+            }
+          {
+             double currentTemp = Double.parseDouble(currentRow.get("Temperature"));
+             double smallestTemp = Double.parseDouble(smallestSoFar.get("TemperatureF"));
+             if(currentTemp < smallestTemp)
+             {
+                 smallestSoFar = currentRow;
+                 file = f.getAbsolutePath();
+                }
+          }
+        }
+        System.out.println(file);
+        return smallestSoFar;
+    }
+  public void testFileWithColdestTemperature()
+  {
+     CSVRecord coldest = fileWithColdestTemperature();
+     System.out.println(coldest);
+    }
+}
